@@ -11,7 +11,7 @@ int main(void)
 
     while (~scanf(" %d %d", &count, &level_count))
     {
-        if (count == 0)
+        if (count == 0 || level_count == 0)
             return 0;
         int *str = (int *)calloc(count, sizeof(int));
         memset(str, 0, count * sizeof(int));
@@ -45,6 +45,7 @@ int main(void)
                             printf("%d ",j);
             }
         }
+        printf("\n");
     }
 
     return 0;
