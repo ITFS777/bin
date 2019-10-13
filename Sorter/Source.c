@@ -30,41 +30,6 @@ bool down_comp(int a, int b)    //降序排列
     else
         return false;
 }
-//////////////////////////////////////////////////////////////////////////函数声明
-int bubble_sorter(int *array, int length, bool (*comp)(int, int));     //冒泡排序
-void selection_sorter(int *array, int length, bool (*comp)(int, int)); //选择排序
-int insertion_sorter(int *array, int length, bool (*comp)(int, int));  //插入排序
-//////////////////////////////////////////////////////////////////////////
-int main(int argc, char *argv[])
-{
-    int length = 0, count = 0;
-    int num[SIZE] = {5, 3, 9, 4, 1, 5, 6, 9, 7, 25, 6, 5, 1, 69, 8, 52, 25, 5};
-    GET_INT_ARRAYLEN(num, length); //使用宏函数获取数组长度
-
-    //count = bubble_sorter(num, length, up_comp);
-    //selection_sorter(num, length, up_comp);
-    count = insertion_sorter(num, length, up_comp);
-
-    for (int i = 0; i < length; i++)
-    {
-        printf("%d ", num[i]);
-    }
-
-    printf("\n%d\n", count);
-
-    //count = bubble_sorter(num, length, down_comp);
-    //selection_sorter(num, length, down_comp);
-    count = bubble_sorter(num, length, down_comp);
-
-    for (int i = 0; i < length; i++)
-    {
-        printf("%d ", num[i]);
-    }
-
-    printf("\n%d\n", count);
-
-    return 0;
-}
 //////////////////////////////////////////////////////////////////////////冒泡排序
 int bubble_sorter(int *array, int length, bool (*comp)(int, int))
 {
