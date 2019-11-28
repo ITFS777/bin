@@ -19,8 +19,7 @@ int main(int argc, char* argv[])
 		{
 			if ((count % 16) == 0)
 			{
-				printf("%05X-", count);
-				printf("%05X | ", (count + 16LL));
+				printf("%05X | ", count);
 			}
 
 			printf("%X ", ch);
