@@ -31,4 +31,14 @@ name:     chartoHEX.exe
 Language: C
 Function: Transform the instream into HEX.
 ```
+```
+name:     Base64En&De.py
+Language: Python
+Function: Encode string to Base64 and decode Base64 to UTF-8, string and bin_seq.
+```
+```
+name:     get_ip.py
+Language: Python
+Function: Get the IP address and write to "server.properties" and "servers.dat" in Minecraft.
+```
 
