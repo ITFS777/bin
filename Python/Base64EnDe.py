@@ -9,7 +9,7 @@ while True:
         print()
     elif flag == 'd':
         string = input("Base64code:")
-        print(base64.b64decode(string.translate(str.maketrans(newTable,oldTable))))
+        print(base64.b64decode(string.translate(str.maketrans(newTable,oldTable))).decode())
         print()
     elif flag == 'c':
         print("oldTable:",oldTable,sep='')
