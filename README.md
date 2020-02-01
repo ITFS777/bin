@@ -1,5 +1,5 @@
-# ITFS's Small Program Bin
->Include
+Some toys
+>List
 ```
 name:        strcount.exe
 Language:    C
@@ -31,16 +31,32 @@ Language:    C
 Description: Transform the instream into HEX.
 ```
 ```
-name:        Base64En&De.py
-Language:    Python
+name:        Base64EnDe.py
+Language:    Python3
 Description: Encode string to Base64 and decode Base64 to UTF-8, string and bin_seq.
 ```
 ```
-name:        get_ip.py
-Language:    Python
-Description: Get the IP address and write to "server.properties" and "servers.dat" in Minecraft.Also write to IP.txt
+name:        getIP.py
+Language:    Python3
+Description: Get the IP address and write to "./IP.txt"
 ```
 ```
 name:        HDOJ
 Language:    C
-Description: commit of HDOJ
+Description: commits of HDOJ
+```
+
+```
+name:		 Int_to_UTF-8.py
+Language:	 Python3
+Description: Convert oct to char of utf-8
+```
+
+```
+name:		 numBreaker.py
+Language:	 Python3
+Description: Break a number into prime
+```
+
+
+
