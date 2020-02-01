@@ -11,18 +11,18 @@ while True:
         string = input("Base64:")
         result = base64.b64decode(string.translate(
             str.maketrans(newTable, oldTable))).decode()
-        print("String:", result, "Hex:", sep='\n')
+        print("Length:",len(result),"String:", result, "Hex:", sep='\n')
         i = 0
         for x in result:
             i += 1
-            print("{:02X}".format(ord(x)), end=' ')
+            print("{:02X}".format(ord(x)), end=',')
             if(i % 16 == 0):
                 print()
         print("\nOct:")
         i = 0
         for x in result:
             i += 1
-            print("{:03d}".format(ord(x)), end=' ')
+            print("{:3d}".format(ord(x)), end=',')
             if(i % 16 == 0):
                 print()
         print()
