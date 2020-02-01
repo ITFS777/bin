@@ -47,14 +47,14 @@ Description: commits of HDOJ
 ```
 
 ```
-name:		 Int_to_UTF-8.py
-Language:	 Python3
+name:        Int_to_UTF-8.py
+Language:    Python3
 Description: Convert oct to char of utf-8
 ```
 
 ```
-name:		 numBreaker.py
-Language:	 Python3
+name:        numBreaker.py
+Language:    Python3
 Description: Break a number into prime
 ```
 
