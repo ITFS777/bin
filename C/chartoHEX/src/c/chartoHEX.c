@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
 	volatile unsigned char ch = '\0';
 	volatile long long int count = 0;
-	char str[length] = {'\0'};
+	unsigned char str[length] = {'\0'};
 
 	while (1)
 	{
