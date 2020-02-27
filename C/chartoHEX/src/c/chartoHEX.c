@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 
 			printf("%02X ", ch); //打印字符对应的HEX
 			str[count % 16] = ch;
-			count++;
+			++count;
 
 			if ((count % 8 == 0) && (count % 16 != 0) && (count != 0))
 				printf("\b-"); //打印分隔符
@@ -51,7 +51,7 @@ void print_str(const char *str, const int num)
 	int i = 0;
 	printf("|");
 
-	for (i = 0; i < num; i++)
+	for (i = 0; i < num; ++i)
 		if (str[i] == '\0')
 			printf(" .");
 		else
@@ -66,7 +66,7 @@ void tab(const long long int num)
 	int i = 0;
 
 	if (space != 0)
-		for (i = 0; i < 16 - space; i++)
+		for (i = 0; i < 16 - space; ++i)
 		{
 			printf("%02X ", 0);
 			if ((space <= 8) && (i == 7 - space))
