@@ -33,7 +33,7 @@ while True:
                         with open("result.txt", 'a') as result:
                             result.write(str(i)+' * ')
                         target = target // i
-                        print(target, i, sep=' × ')
+                        print(target, i, sep=" × ")
                         print(' '*(len(decom)*2+1)+"└",end='')
                         break
                 i += 1
