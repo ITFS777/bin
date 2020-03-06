@@ -23,7 +23,7 @@ bool isPrime(long long int num)
     }
     return true;
 }
-void numBreak(vector<long long int> &result, long long int target)
+void numBreak(vector<long long int>& result, long long int target)
 {
     int i = 2;
     while (i <= target)
@@ -55,21 +55,29 @@ int main(void)
 {
     long long int target = 0;
     int i = 0, length = 0;
-    cout << "Number to break>";
     vector<long long int> result;
-    while (cin >> target)
+    while (1)
     {
-        numBreak(result, target);
-        length = result.size();
-        cout << target << '=' << endl;
-        for (i = 0; i < length; ++i)
-            if (i)
-                cout << " * " << result[i];
-            else
-                cout << result[i];
-        cout << endl
-             << "Number to break>";
-        result.clear();
+        cout << "Number to break>";
+        while (cin >> target)
+        {
+            numBreak(result, target);
+            length = result.size();
+            cout << target << '=' << endl;
+            for (i = 0; i < length; ++i)
+                if (i)
+                    cout << " * " << result[i];
+                else
+                    cout << result[i];
+            cout << endl
+                << "Number to break>";
+            result.clear();
+        }
+
+        cout << "Illegal input!" << endl;
+        cin.clear();
+        cin.sync();
+        cin.ignore(4096, '\n');
     }
     return 0;
 }
