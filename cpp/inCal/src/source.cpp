@@ -40,7 +40,7 @@ public:
 // The operator below should be same with the switch body in line 56
 const std::vector<char>
     OPERATOR_LIST = {
-        '+', '-', '*', '/', '^', '='};
+        '+', '-', '*', '/', '^', '=', '(', ')'};
 const std::vector<OperatorPrior> PRIORITY_LIST = {
     OperatorPrior('#', -1, -1),
     OperatorPrior('+', 3, 2),
@@ -65,7 +65,7 @@ int main(void)
     string expression, token, assigned;
     number_t result;
     bool is_assign = false;
-    int num_c, symb_c;
+    int num_c, symb_c, lbracket_c, rbracket_c;
     // Process and calculate
     while (true)
     {
@@ -73,6 +73,8 @@ int main(void)
         is_assign = false;
         num_c = 0;
         symb_c = 0;
+        lbracket_c = 0;
+        rbracket_c = 0;
         std::stack<char> symbs;
         symbs.push('#');
         expression.clear();
@@ -82,6 +84,13 @@ int main(void)
         getline(cin, expression);
         try
         {
+#ifdef DEBUG // STACK INFO
+
+            for (auto i = expr_anay.begin(); i != expr_anay.end(); ++i)
+                cout << i->val << ' ';
+            cout << endl;
+
+#endif
             for (auto i = expression.begin(); i != expression.end(); ++i)
             {
                 token.clear();
@@ -96,30 +105,58 @@ int main(void)
                     ++num_c;
                     break;
                 case OPERATOR:
+                    // Assignment expression
                     if (*i == '=')
                     {
                         if (expr_anay.size() == 1)
                         {
-                            is_assign = true;
-                            assigned = expr_anay.back().val;
-                            expr_anay.pop_back();
-                            --num_c;
-                            break;
+                            if (expr_anay.back().type == VARIABLE)
+                            {
+                                is_assign = true;
+                                assigned = expr_anay.back().val;
+                                expr_anay.pop_back();
+                                --num_c;
+                                break;
+                            }
+                            else
+                                throw std::runtime_error("It can only be variable on the left of '='.");
                         }
                         else
                             throw std::runtime_error("There should be only one variable on the left of '='.");
                     }
+
+                    // Value expression
                     else if (icp(*i) > isp(symbs.top()))
-                        symbs.push(*i);
-                    else if (icp(*i) < isp(symbs.top()))
                     {
-                        expr_anay.push_back(Token(OPERATOR, string(1, symbs.top())));
-                        symbs.pop();
+                        if (*i == '(')
+                            ++lbracket_c;
+                        if (*i == ')')
+                            ++rbracket_c;
                         symbs.push(*i);
                     }
                     else
-                        symbs.pop();
-                    ++symb_c;
+                    {
+                        if (*i == ')')
+                            ++rbracket_c;
+                        while (icp(*i) < isp(symbs.top()))
+                        {
+
+                            expr_anay.push_back(Token(OPERATOR, string(1, symbs.top())));
+                            symbs.pop();
+                        }
+
+                        // Bracket match
+                        if (icp(*i) == isp(symbs.top()))
+                        {
+                            symbs.pop();
+                            --lbracket_c;
+                            --rbracket_c;
+                        }
+                        else
+                            symbs.push(*i);
+                    }
+                    if (*i != '(' && *i != ')')
+                        ++symb_c;
                     break;
                 case VARIABLE:
                     token += *i++;
@@ -147,23 +184,27 @@ int main(void)
             cout << "------------------------------------------------------------" << endl;
 
 #endif
-            // Calculate
+            // Error detection
             if ((num_c - 1) > symb_c)
                 throw std::runtime_error("Overmuch number(s) or variable(s).");
             if ((num_c - 1) < symb_c)
                 throw std::runtime_error("Overmuch operator(s).");
+            if (lbracket_c > rbracket_c)
+                throw std::runtime_error("More open '(' bracket(s) than closed ')' bracket(s).");
+            if (lbracket_c < rbracket_c)
+                throw std::runtime_error("More closed ')' bracket(s) than open '(' bracket(s).");
 
+            // Calculate
             result = calculate(expr_anay);
 
             // Output
-
             if (is_assign)
                 g_vars[assigned] = result;
             else
                 cout << "ans = " << result << endl;
         }
         catch (std::runtime_error &err)
-        {
+        { // Output error info
             std::cerr << "ERROR: " << err.what() << endl;
         }
     }
