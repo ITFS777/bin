@@ -4,6 +4,7 @@
 #include <stack>
 #include <map>
 #include <cmath>
+// #define DEBUG
 ////////////////////////////////////////////////////////////////////////////////
 using std::cin;
 using std::cout;
@@ -42,7 +43,6 @@ const std::vector<char>
         '+', '-', '*', '/', '^', '='};
 const std::vector<OperatorPrior> PRIORITY_LIST = {
     OperatorPrior('#', -1, -1),
-    // OperatorPrior('=', 1, 0),
     OperatorPrior('+', 3, 2),
     OperatorPrior('-', 3, 2),
     OperatorPrior('*', 5, 4),
@@ -50,27 +50,29 @@ const std::vector<OperatorPrior> PRIORITY_LIST = {
     OperatorPrior('^', 7, 6),
     OperatorPrior('(', 1, 127),
     OperatorPrior(')', 127, 1)};
+std::map<string, number_t> g_vars;
 int icp(char _Symbol);
 int isp(char _Symbol);
 int typeMatch(const char &_TokenHead);
 template <typename ElementType>
 bool isIn(const std::vector<ElementType> &_Container, const ElementType &_Element);
+number_t calculate(std::vector<Token> &_TokenStack);
 ////////////////////////////////////////////////////////////////////////////////
 int main(void)
 {
     // Initialize containers
-    std::map<string, number_t> vars;
-    std::stack<number_t> num_stack;
     std::vector<Token> expr_anay;
     string expression, token, assigned;
-    number_t left_val, right_val, result;
+    number_t result;
     bool is_assign = false;
-
+    int num_c, symb_c;
     // Process and calculate
     while (true)
     {
         // Convert mid_expression to back_expression
         is_assign = false;
+        num_c = 0;
+        symb_c = 0;
         std::stack<char> symbs;
         symbs.push('#');
         expression.clear();
@@ -78,119 +80,92 @@ int main(void)
         assigned.clear();
         expr_anay.clear();
         getline(cin, expression);
-        for (auto i = expression.begin(); i != expression.end(); ++i)
+        try
         {
-            token.clear();
-            switch (typeMatch(*i))
+            for (auto i = expression.begin(); i != expression.end(); ++i)
             {
-            case NUMBER:
-                token += *i++;
-                while ((*i >= '0' && *i <= '9') || (*i == '.'))
+                token.clear();
+                switch (typeMatch(*i))
+                {
+                case NUMBER:
                     token += *i++;
-                expr_anay.push_back(Token(NUMBER, token));
-                --i;
-                break;
-            case OPERATOR:
-                if (*i == '=')
-                {
-                    is_assign = true;
-                    assigned = expr_anay.back().val;
-                    expr_anay.pop_back();
+                    while ((*i >= '0' && *i <= '9') || (*i == '.'))
+                        token += *i++;
+                    expr_anay.push_back(Token(NUMBER, token));
+                    --i;
+                    ++num_c;
                     break;
-                }
-                if (icp(*i) > isp(symbs.top()))
-                    symbs.push(*i);
-                else if (icp(*i) < isp(symbs.top()))
-                {
-                    expr_anay.push_back(Token(OPERATOR, string(1, symbs.top())));
-                    symbs.pop();
-                    symbs.push(*i);
-                }
-                else
-                    symbs.pop();
-                break;
-            case VARIABLE:
-                token += *i++;
-                while ((*i >= 'a' && *i <= 'z') || (*i >= 'A' && *i <= 'Z') || (*i >= '0' && *i <= '9') || (*i == '_'))
+                case OPERATOR:
+                    if (*i == '=')
+                    {
+                        if (expr_anay.size() == 1)
+                        {
+                            is_assign = true;
+                            assigned = expr_anay.back().val;
+                            expr_anay.pop_back();
+                            --num_c;
+                            break;
+                        }
+                        else
+                            throw std::runtime_error("There should be only one variable on the left of '='.");
+                    }
+                    else if (icp(*i) > isp(symbs.top()))
+                        symbs.push(*i);
+                    else if (icp(*i) < isp(symbs.top()))
+                    {
+                        expr_anay.push_back(Token(OPERATOR, string(1, symbs.top())));
+                        symbs.pop();
+                        symbs.push(*i);
+                    }
+                    else
+                        symbs.pop();
+                    ++symb_c;
+                    break;
+                case VARIABLE:
                     token += *i++;
-                expr_anay.push_back(Token(VARIABLE, token));
-                --i;
-                break;
-            default:
-                break;
-            }
-        }
-        while (symbs.top() != '#')
-        {
-            expr_anay.push_back(Token(OPERATOR, string(1, symbs.top())));
-            symbs.pop();
-        }
-
-        ///////////////////////////////////DEBUG INFO///////////////////////////////////
-/* 
-        cout << "------------------------------------------------------------" << endl;
-        cout << expr_anay.size() << endl;
-        for (auto i = expr_anay.begin(); i != expr_anay.end(); ++i)
-            cout << i->type << ' ' << i->val << endl;
-        cout << "------------------------------------------------------------" << endl;
- */
-        ////////////////////////////////////////////////////////////////////////////////
-
-        // Calculate
-        while (!num_stack.empty())
-            num_stack.pop();
-        for (auto i = expr_anay.begin(); i != expr_anay.end(); ++i)
-        {
-            switch (i->type)
-            {
-            case NUMBER:
-                num_stack.push(stold(i->val));
-                break;
-            case VARIABLE:
-                num_stack.push(vars[i->val]);
-                break;
-            case OPERATOR:
-                right_val = num_stack.top();
-                num_stack.pop();
-                left_val = num_stack.top();
-                num_stack.pop();
-                switch (i->val[0])
-                {
-                case '+':
-                    result = left_val + right_val;
-                    break;
-                case '-':
-                    result = left_val - right_val;
-                    break;
-                case '*':
-                    result = left_val * right_val;
-                    break;
-                case '/':
-                    result = left_val / right_val;
-                    break;
-                case '^':
-                    result = pow(left_val, right_val);
+                    while ((*i >= 'a' && *i <= 'z') || (*i >= 'A' && *i <= 'Z') || (*i >= '0' && *i <= '9') || (*i == '_'))
+                        token += *i++;
+                    expr_anay.push_back(Token(VARIABLE, token));
+                    --i;
+                    ++num_c;
                     break;
                 default:
                     break;
                 }
-                num_stack.push(result);
-                break;
-            default:
-                break;
             }
-        }
+            while (symbs.top() != '#')
+            {
+                expr_anay.push_back(Token(OPERATOR, string(1, symbs.top())));
+                symbs.pop();
+            }
+#ifdef DEBUG // STACK INFO
 
-        // Output
-        if (num_stack.size() == 1)
-        {
+            cout << "------------------------------------------------------------" << endl;
+            cout << expr_anay.size() << endl;
+            for (auto i = expr_anay.begin(); i != expr_anay.end(); ++i)
+                cout << i->type << ' ' << i->val << endl;
+            cout << "------------------------------------------------------------" << endl;
+
+#endif
+            // Calculate
+            if ((num_c - 1) > symb_c)
+                throw std::runtime_error("Overmuch number(s) or variable(s).");
+            if ((num_c - 1) < symb_c)
+                throw std::runtime_error("Overmuch operator(s).");
+
+            result = calculate(expr_anay);
+
+            // Output
+
             if (is_assign)
-                vars[assigned] = num_stack.top();
+                g_vars[assigned] = result;
             else
-                cout << "result: " << num_stack.top() << endl;
+                cout << "ans = " << result << endl;
         }
-        else
-            cout << "Illegal input!" << endl;
+        catch (std::runtime_error &err)
+        {
+            std::cerr << "ERROR: " << err.what() << endl;
+        }
     }
 
     return 0;
@@ -232,3 +207,51 @@ bool isIn(const std::vector<ElementType> &_Container, const ElementType &_Elemen
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////
+number_t calculate(std::vector<Token> &_TokenStack)
+{
+    std::stack<number_t> num_stack;
+    number_t left_val, right_val, result;
+    for (auto i = _TokenStack.begin(); i != _TokenStack.end(); ++i)
+    {
+        switch (i->type)
+        {
+        case NUMBER:
+            num_stack.push(stold(i->val));
+            break;
+        case VARIABLE:
+            num_stack.push(g_vars[i->val]);
+            break;
+        case OPERATOR:
+
+            right_val = num_stack.top();
+            num_stack.pop();
+            left_val = num_stack.top();
+            num_stack.pop();
+            switch (i->val[0])
+            {
+            case '+':
+                result = left_val + right_val;
+                break;
+            case '-':
+                result = left_val - right_val;
+                break;
+            case '*':
+                result = left_val * right_val;
+                break;
+            case '/':
+                result = left_val / right_val;
+                break;
+            case '^':
+                result = pow(left_val, right_val);
+                break;
+            default:
+                break;
+            }
+            num_stack.push(result);
+            break;
+        default:
+            break;
+        }
+    }
+    return num_stack.top();
+}
